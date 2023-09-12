@@ -172,7 +172,7 @@ def load_with_meta_tensor(model_path, model_name, task_name, mii_config):
     config = _attempt_load(AutoConfig.from_pretrained, model_name, cache_path)
     config.quantization_config['disable_exllama'] = True
     with OnDevice(dtype=torch.float16, device='meta', enabled=True):
-        model = AutoModelForCausalLM.from_config(config, torch_dtype=torch.bfloat16)
+        model = AutoModelForCausalLM.from_config(config, torch_dtype=torch.bfloat16, trust_remote_code=mii_config.trust_remote_code)
     model = model.eval()
     checkpoint_dict = create_checkpoint_dict(model_name, model_path, mii_config)
     torch.distributed.barrier()
