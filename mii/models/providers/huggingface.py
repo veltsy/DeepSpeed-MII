@@ -186,10 +186,17 @@ def hf_provider(model_path, model_name, task_name, mii_config):
     if mii_config.meta_tensor:
         return load_with_meta_tensor(model_path, model_name, task_name, mii_config)
     else:
+        config = AutoConfig.from_pretrained(model_name if not is_aml() else model_path,
+                                            trust_remote_code=mii_config.trust_remote_code)
+        try:
+            config.quantization_config['disable_exllama'] = True
+        except:
+            pass
         device = get_device(load_with_sys_mem=mii_config.load_with_sys_mem)
         inference_pipeline = pipeline(
             task_name,
             model=model_name if not is_aml() else model_path,
+            config=config,
             device=device,
             framework="pt",
             token=mii_config.hf_auth_token,
