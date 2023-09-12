@@ -170,7 +170,7 @@ def load_with_meta_tensor(model_path, model_name, task_name, mii_config):
     tokenizer.pad_token = tokenizer.eos_token
 
     config = _attempt_load(AutoConfig.from_pretrained, model_name, cache_path)
-
+    config.quantization_config['disable_exllama'] = True
     with OnDevice(dtype=torch.float16, device='meta', enabled=True):
         model = AutoModelForCausalLM.from_config(config, torch_dtype=torch.bfloat16)
     model = model.eval()
